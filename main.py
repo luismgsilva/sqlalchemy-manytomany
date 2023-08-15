@@ -32,3 +32,45 @@ class ProjectUser(Base):
     notes = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     project_id = Column(Integer, ForeignKey('projects.id'))
+
+
+# Create the tables in the database
+Base.metadata.create_all(engine)
+
+# Test it
+with Session(bind=engine) as session:
+
+    # add users
+    usr1 = User(name="bob")
+    session.add(usr1)
+    print(usr1.id)
+
+    usr2 = User(name="alice")
+    session.add(usr2)
+
+    session.commit()
+
+
+    print(usr1.id)
+
+
+    # add projects
+    prj1 = Project(name="Project 1")
+    session.add(prj1)
+
+    prj2 = Project(name="Project 2")
+    session.add(prj2)
+
+    session.commit()
+
+    # map users to projects
+    prj1.users = [usr1, usr2]
+    prj2.users = [usr2]
+
+    session.commit()
+
+
+with Session(bind=engine) as session:
+
+    print(session.query(User).where(User.id == 1).one().projects)
+    print(session.query(Project).where(Project.id == 1).one().users)
