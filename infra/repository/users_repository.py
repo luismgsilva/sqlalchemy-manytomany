@@ -8,11 +8,15 @@ class UsersRepository:
       data = db.session.query(Users).all()
       return data
 
-
   def select_by_id(self, id):
     with DBConnectionHandler() as db:
       # data = db.session.query(Users).join(Project, Users.projects == Project.id).with_entities(Users.name, Project.name).all()
       data = db.session.query(Users).where(Users.id == id).one().projects
+      return data
+
+  def select_data_by_id(self, id):
+    with DBConnectionHandler() as db:
+      data = db.session.query(Users).where(Users.id == id).one()
       return data
 
   def insert(self, **body):
@@ -24,7 +28,7 @@ class UsersRepository:
       db.session.add(data_insert)
       db.session.commit()
 
-      return data_insert
+      return data_insert.id
 
   def delete(self, id):
     with DBConnectionHandler() as db:
